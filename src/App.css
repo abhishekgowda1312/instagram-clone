@@ -4,11 +4,31 @@
 .app {
     background-color: #FAFAFA;
     height: 100%;
+    
+}
+.app__posts{
+    padding: 20px;
+    display: flex;
+    justify-content: center;
 }
 .app__header{
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 20px;
     background-color: white;
-    padding: 7px;
     align-items: center;
     border-bottom: 1px solid lightgray;
      object-fit: contain;  /*keeps the aspect-ratio */
+     display: flex;
+     flex-direction: row;
+     justify-content: space-around;
+}
+.app_headerImage{
+    object-fit: contain;
+}
+.app__signup{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
 }

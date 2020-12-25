@@ -1,16 +1,51 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './Post.css'
 import Avatar from '@material-ui/core/Avatar'
+import { db } from './firebase'
+import firebase from 'firebase'
 
-function Post({ imageUrl, caption }) {
+function Post({ username, user, postId, imageUrl, caption }) {
+    const [comments, setComments] = useState([])
+    const [comment, setComment] = useState('')
+
+    useEffect(() => {
+        let unsubscribe;
+        if (postId) {
+            unsubscribe = db
+                .collection("posts")
+                .doc(postId)
+                .collection("comments")
+                .orderBy('timestamp', 'desc')
+                .onSnapshot((snapshot) => {
+                    setComments(snapshot.docs.map((doc) => doc.data()))
+                })
+        }
+        return () => {
+            unsubscribe()
+        }
+    }, [postId])
+
+
+    const postComment = (e) => {
+        e.preventDefault()
+        db.collection("posts")
+            .doc(postId)
+            .collection("comments")
+            .add({
+                text: comment,
+                username: user.displayName,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+        setComment('')
+    }
     return (
         <div className="post">
             <div className="post__header">
                 <Avatar
                     className="post__avatar"
-                    alt="abhishekgowda1312"
+                    alt={username}
                     src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png" />
-                <h3 className="post__avatarUsername">Abhishekgowda1312</h3>
+                <h3 className="post__avatarUsername">{username}</h3>
             </div>
 
 
@@ -20,7 +55,36 @@ function Post({ imageUrl, caption }) {
             <img className="post__image" src={imageUrl} alt="" />
 
             {/* username + caption */}
-            <h4 className="post__text"><strong>Abhishekgowda1312</strong>{caption}</h4>
+            <h4 className="post__text"><strong>{username}</strong>{caption}</h4>
+
+            <div className="post__comments">
+                {
+                    comments.map((comment) => (
+                        <p>
+                            <strong>{comment.username}</strong> {comment.text}
+                        </p>
+                    ))
+                }
+
+            </div>
+
+
+            {user && (
+                <form className="post__commentBox">
+                    <input
+                        className="post__input"
+                        type="text"
+                        placeholder="Add a comment..."
+                        value={comment}
+                        onChange={e => setComment(e.target.value)} />
+                    <button
+                        disabled={!comment}
+                        className="post__button"
+                        type="submit"
+                        onClick={postComment}>Post</button>
+                </form>
+            )}
+
         </div>
     )
 }
