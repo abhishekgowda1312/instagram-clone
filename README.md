@@ -3,6 +3,7 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 This is an Instagram clone
 ## Available Scripts
+https://instagram-clone-60a54.web.app/ to run the app
 
 In the project directory, you can run:
 
